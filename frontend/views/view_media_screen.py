@@ -1,5 +1,6 @@
 import os
 import subprocess
+
 from kivy.uix.screenmanager import Screen
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
@@ -26,9 +27,9 @@ class ViewMediaScreen(Screen):
 
         layout.add_widget(Label(text="Archivos Multimedia"))
 
-        ruta_descarga = obtener_ruta_descarga()
-        print(f"Inicializando FileChooser en la ruta: {ruta_descarga}")
-        self.file_chooser = CustomFileChooser(path=ruta_descarga)
+        self.ruta_descarga = obtener_ruta_descarga()
+        print(f"Inicializando FileChooser en la ruta: {self.ruta_descarga}")
+        self.file_chooser = CustomFileChooser(path=self.ruta_descarga)
         layout.add_widget(self.file_chooser)
 
         self.play_button = Button(text="Reproducir")
@@ -36,7 +37,7 @@ class ViewMediaScreen(Screen):
         layout.add_widget(self.play_button)
 
         self.update_button = Button(text="Actualizar")
-        self.update_button.bind(on_press=self.show_update_options)
+        self.update_button.bind(on_press=self.update_media)
         layout.add_widget(self.update_button)
 
         self.delete_button = Button(text="Eliminar")
@@ -63,38 +64,22 @@ class ViewMediaScreen(Screen):
             else:
                 print(f"Error: El archivo {file_path} no existe.")
 
-    def show_update_options(self, instance):
-        selected_file = self.file_chooser.selection
-        if selected_file:
-            self.update_layout = BoxLayout(orientation="vertical", padding=20, spacing=10)
-            self.update_layout.add_widget(Label(text="Nuevo nombre del archivo:"))
-            self.new_name_input = TextInput(hint_text="Nuevo nombre", multiline=False)
-            self.update_layout.add_widget(self.new_name_input)
-
-            self.confirm_update_button = Button(text="Confirmar actualización")
-            self.confirm_update_button.bind(on_press=self.update_media)
-            self.update_layout.add_widget(self.confirm_update_button)
-
-            self.add_widget(self.update_layout)
-
     def update_media(self, instance):
         selected_file = self.file_chooser.selection
         if selected_file:
-            file_path = selected_file[0]
-            new_name = self.new_name_input.text.strip()
-            if new_name:
-                new_path = os.path.join(os.path.dirname(file_path), new_name + os.path.splitext(file_path)[1])
-                os.rename(file_path, new_path)
-                self.file_chooser._update_files()
-                print(f"Archivo renombrado a: {new_path}")
-                self.remove_widget(self.update_layout)
+            print(f"Actualizando archivo: {selected_file[0]}")
 
     def delete_media(self, instance):
         selected_file = self.file_chooser.selection
         if selected_file:
             os.remove(selected_file[0])
-            self.file_chooser._update_files()
+            self.refresh_file_chooser()
             print(f"Eliminando archivo: {selected_file[0]}")
 
     def go_back(self, instance):
         self.manager.current = "main"
+
+    def refresh_file_chooser(self):
+        self.file_chooser.path = self.ruta_descarga
+        self.file_chooser._update_files()
+        print("FileChooser actualizado")

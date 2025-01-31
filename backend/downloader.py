@@ -1,10 +1,24 @@
 import os
+
 from yt_dlp import YoutubeDL
 
-from config import obtener_ruta_descarga
-from format import obtener_formato_descarga
+from .config import obtener_ruta_descarga
+from .format import obtener_formato_descarga
 
-def descargar_video(url, ruta_descarga):
+def obtener_url():
+    """
+    Pide al usuario la URL del video.
+    """
+    url = input("Introduce la URL del video: ").strip()
+    return url
+
+def obtener_ruta_descarga_backend():
+    """
+    Obtiene la ruta de descarga desde la configuración.
+    """
+    return obtener_ruta_descarga()
+
+def descargar_video(url, ruta_descarga, format_selected):
     # Obtener la ruta absoluta del directorio actual del script
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
@@ -18,7 +32,7 @@ def descargar_video(url, ruta_descarga):
     else:
         print(f"Advertencia: La ruta {ffmpeg_path} se reconoce correctamente.")
 
-    formato_id = obtener_formato_descarga(url)
+    formato_id = obtener_formato_descarga(url, format_selected)
     if not formato_id:
         print("No se pudo seleccionar un formato.")
         return
@@ -39,16 +53,13 @@ def descargar_video(url, ruta_descarga):
     except Exception as e:
         print(f"Error durante la descarga: {e}")
 
-if __name__ == "__main__":
-    # URL del video que quieres descargar
-    url = input("Introduce la URL del video: ")
+#if __name__ == "__main__":
+    # Obtener la URL del video
+#    url = obtener_url()
     
-    # Ruta de descarga (opcional)
-    ruta_descarga = obtener_ruta_descarga()
-    print(f"Descargando video en: {ruta_descarga}")
-    
-    if ruta_descarga.strip() == "":
-        ruta_descarga = None
+    # Obtener la ruta de descarga
+#    ruta_descarga = obtener_ruta_descarga_backend()
+#    print(f"Descargando video en: {ruta_descarga}")
     
     # Llamar a la función para descargar el video
-    descargar_video(url, ruta_descarga)
+#    descargar_video(url, ruta_descarga)

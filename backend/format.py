@@ -18,31 +18,31 @@ def obtener_formatos_disponibles(url):
             print(f"Error al obtener los formatos: {e}")
             return []
 
-def seleccionar_tipo_descarga():
+def seleccionar_tipo_descarga(format_selected):
     """
     Permite al usuario seleccionar el tipo de descarga: audio, video o video sin sonido.
     """
-    print("\nSelecciona el tipo de descarga:")
-    print("1. Video (con audio)")
-    print("2. Audio (solo audio)")
-    print("3. Video mudo (sin audio)")
-    tipo = input("Introduce el número correspondiente: ").strip()
+    #print("\nSelecciona el tipo de descarga:")
+    #print("1. Video (con audio)")
+    #print("2. Audio (solo audio)")
+    #print("3. Video mudo (sin audio)")
+    #tipo = input("Introduce el número correspondiente: ").strip()
 
-    if tipo == "1":
+    if format_selected == "Video (con audio)":
         return "video"
-    elif tipo == "2":
+    elif format_selected == "Audio (solo audio)":
         return "audio"
-    elif tipo == "3":
+    elif format_selected == "Video mudo (sin audio)":
         return "video_mudo"
     else:
         print("Opción inválida. Saliendo...")
         return None
 
-def obtener_formato_descarga(url):
+def obtener_formato_descarga(url, format_selected):
     """
     Obtiene el formato de descarga según el tipo seleccionado.
     """
-    tipo = seleccionar_tipo_descarga()
+    tipo = seleccionar_tipo_descarga(format_selected)
     if not tipo:
         return None
 
@@ -55,8 +55,8 @@ def obtener_formato_descarga(url):
         return "bestvideo"
 
 # Ejemplo de uso
-if __name__ == "__main__":
-    url = input("Introduce la URL del video: ")
-    formato_seleccionado = obtener_formato_descarga(url)
-    if formato_seleccionado:
-        print(f"\nFormato seleccionado: {formato_seleccionado}")
+#if __name__ == "__main__":
+#    url = input("Introduce la URL del video: ")
+#    formato_seleccionado = obtener_formato_descarga(url)
+#    if formato_seleccionado:
+#        print(f"\nFormato seleccionado: {formato_seleccionado}")

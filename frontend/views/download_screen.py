@@ -4,8 +4,13 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from kivy.uix.spinner import Spinner
+from kivy.properties import StringProperty
+
+from backend.downloader import descargar_video, obtener_ruta_descarga_backend, obtener_formato_descarga
 
 class DownloadScreen(Screen):
+    estado = StringProperty("")  # Para mostrar mensajes de estado
+
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         layout = BoxLayout(orientation="vertical", padding=20, spacing=10)
@@ -21,8 +26,8 @@ class DownloadScreen(Screen):
         )
         layout.add_widget(self.format_spinner)
 
-        self.preview_label = Label(text="Previsualización del contenido")
-        layout.add_widget(self.preview_label)
+        self.estado_label = Label(text=self.estado)
+        layout.add_widget(self.estado_label)
 
         self.download_button = Button(text="Descargar")
         self.download_button.bind(on_press=self.download)
@@ -37,7 +42,13 @@ class DownloadScreen(Screen):
     def download(self, instance):
         url = self.url_input.text
         format_selected = self.format_spinner.text
-        print(f"Descargando video desde URL: {url} con formato: {format_selected}")
+        ruta_descarga = obtener_ruta_descarga_backend()
+        self.estado = f"Descargando video desde URL: {url} con formato: {format_selected} en la ruta: {ruta_descarga}"
+        self.estado_label.text = self.estado
+        descargar_video(url, ruta_descarga, format_selected)
+        self.estado = "¡Descarga completada!"
+        self.estado_label.text = self.estado
+        self.manager.get_screen('view_media').refresh_file_chooser()
 
     def go_back(self, instance):
         self.manager.current = "main"

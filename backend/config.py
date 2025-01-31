@@ -1,5 +1,7 @@
 import os
+
 import json
+
 from pathlib import Path
 
 # Ruta del archivo de configuración
@@ -76,6 +78,6 @@ def actualizar_ruta_descarga(nueva_ruta):
     print(f"Ruta de descarga actualizada: {nueva_ruta}")
 
 # Ejemplo de uso
-if __name__ == "__main__":
-    ruta = obtener_ruta_descarga()
-    print(f"La ruta de descarga configurada es: {ruta}")
+#if __name__ == "__main__":
+#    ruta = obtener_ruta_descarga()
+#    print(f"La ruta de descarga configurada es: {ruta}")

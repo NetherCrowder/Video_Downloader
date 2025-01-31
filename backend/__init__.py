@@ -1,1 +1,1 @@
-from .config import *
+from .downloader import *
