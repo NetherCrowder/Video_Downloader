@@ -14,9 +14,12 @@ class MainScreen(Screen):
         self.btn_create.bind(on_press=self.go_to_create)
         self.btn_read = Button(text="Leer")
         self.btn_read.bind(on_press=self.go_to_read)
+        self.btn_test = Button(text="test")
+        self.btn_test.bind(on_press=self.go_to_test)
 
         layout.add_widget(self.btn_create)
         layout.add_widget(self.btn_read)
+        layout.add_widget(self.btn_test)
 
         self.add_widget(layout)
 
@@ -25,3 +28,6 @@ class MainScreen(Screen):
 
     def go_to_read(self, instance):
         self.manager.current = "view_media"
+
+    def go_to_test(self, instance):
+        self.manager.current = "new_download"

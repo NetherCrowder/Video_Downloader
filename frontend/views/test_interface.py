@@ -15,7 +15,7 @@ from yt_dlp import YoutubeDL  # Usar yt-dlp para obtener la URL de la miniatura
 from backend.downloader import descargar_video, obtener_ruta_descarga_backend  # Importar la función de descarga
 
 Builder.load_string('''
-<DownloadScreen>:
+<NewDownloadScreen>:
     BoxLayout:
         orientation: 'vertical'
         padding: 10
@@ -180,7 +180,7 @@ Builder.load_string('''
             color: 0, 0, 0, 1  # Color negro
 ''')
 
-class DownloadScreen(Screen):
+class NewDownloadScreen(Screen):
     progreso = NumericProperty(0)  # Progreso de la descarga (0-100)
     tiempo_restante_texto = StringProperty("00:00")  # Tiempo restante de la descarga
     miniatura_cache = None  # Ruta de la miniatura en cache

@@ -28,11 +28,11 @@ def seleccionar_tipo_descarga(format_selected):
     #print("3. Video mudo (sin audio)")
     #tipo = input("Introduce el número correspondiente: ").strip()
 
-    if format_selected == "Video (con audio)":
+    if format_selected == "video":
         return "video"
-    elif format_selected == "Audio (solo audio)":
+    elif format_selected == "audio":
         return "audio"
-    elif format_selected == "Video mudo (sin audio)":
+    elif format_selected == "mudo":
         return "video_mudo"
     else:
         print("Opción inválida. Saliendo...")

@@ -1,7 +1,5 @@
 import os
-
 from yt_dlp import YoutubeDL
-
 from .config import obtener_ruta_descarga
 from .format import obtener_formato_descarga
 
@@ -18,7 +16,10 @@ def obtener_ruta_descarga_backend():
     """
     return obtener_ruta_descarga()
 
-def descargar_video(url, ruta_descarga, format_selected):
+def descargar_video(url, ruta_descarga, format_selected, callback_progreso=None):
+    """
+    Descarga el video y llama a callback_progreso para actualizar el progreso.
+    """
     # Obtener la ruta absoluta del directorio actual del script
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
@@ -43,6 +44,7 @@ def descargar_video(url, ruta_descarga, format_selected):
         'format': formato_id,  # Usa el formato seleccionado
         'outtmpl': os.path.join(ruta_descarga, '%(title)s.%(ext)s'),  # Ruta de descarga
         'quiet': True,  # Silencia las advertencias
+        'progress_hooks': [lambda d: _progreso_descarga(d, callback_progreso)],  # Hook de progreso
     }
 
     try:
@@ -53,13 +55,13 @@ def descargar_video(url, ruta_descarga, format_selected):
     except Exception as e:
         print(f"Error durante la descarga: {e}")
 
-#if __name__ == "__main__":
-    # Obtener la URL del video
-#    url = obtener_url()
-    
-    # Obtener la ruta de descarga
-#    ruta_descarga = obtener_ruta_descarga_backend()
-#    print(f"Descargando video en: {ruta_descarga}")
-    
-    # Llamar a la función para descargar el video
-#    descargar_video(url, ruta_descarga)
+def _progreso_descarga(d, callback_progreso):
+    """
+    Hook de progreso para yt-dlp.
+    Llama a callback_progreso con el progreso actual.
+    """
+    if callback_progreso and 'downloaded_bytes' in d and 'total_bytes' in d:
+        # Calcular el progreso en porcentaje
+        progreso = (d['downloaded_bytes'] / d['total_bytes']) * 100
+        tiempo_restante = d.get('eta', 0)  # Tiempo restante en segundos
+        callback_progreso(progreso, tiempo_restante)

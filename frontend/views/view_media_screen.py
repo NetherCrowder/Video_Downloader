@@ -77,7 +77,7 @@ class ViewMediaScreen(Screen):
             print(f"Eliminando archivo: {selected_file[0]}")
 
     def go_back(self, instance):
-        self.manager.current = "main"
+        self.manager.current = "main_screen"
 
     def refresh_file_chooser(self):
         self.file_chooser.path = self.ruta_descarga
