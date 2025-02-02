@@ -7,9 +7,6 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
-from kivy.uix.scrollview import ScrollView
-from kivy.uix.gridlayout import GridLayout
-from kivy.core.window import Window
 from backend.config import obtener_ruta_descarga
 
 Builder.load_string('''
@@ -37,6 +34,14 @@ Builder.load_string('''
                 width: 150
                 on_press: root.ir_a_descargar()
 
+            Button:
+                id: retroceder_btn
+                text: "Retroceder"
+                size_hint_x: None
+                width: 150
+                disabled: True
+                on_press: root.retroceder_carpeta()
+
         # Lista de archivos multimedia
         ScrollView:
             size_hint: (1, 1)
@@ -55,73 +60,12 @@ Builder.load_string('''
             height: 30
             font_size: 14
             color: 0, 0, 0, 1  # Color negro
-
-<PopupEditar@Popup>:
-    title: "Editar Archivo"
-    size_hint: (0.8, 0.4)
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 10
-        spacing: 10
-
-        Label:
-            text: root.texto_archivo
-            size_hint_y: None
-            height: 30
-            font_size: 14
-
-        TextInput:
-            id: nuevo_nombre
-            text: root.nombre_actual
-            multiline: False
-            size_hint_y: None
-            height: 40
-
-        BoxLayout:
-            size_hint_y: None
-            height: 40
-            spacing: 10
-
-            Button:
-                text: "Guardar"
-                on_press: root.guardar_cambios(nuevo_nombre.text)
-
-            Button:
-                text: "Cancelar"
-                on_press: root.dismiss()
-
-<PopupEliminar@Popup>:
-    title: "Confirmar Eliminación"
-    size_hint: (0.6, 0.3)
-    BoxLayout:
-        orientation: 'vertical'
-        padding: 10
-        spacing: 10
-
-        Label:
-            text: root.texto_confirmacion
-            size_hint_y: None
-            height: 30
-            font_size: 14
-
-        BoxLayout:
-            size_hint_y: None
-            height: 40
-            spacing: 10
-
-            Button:
-                text: "Sí"
-                on_press: root.confirmar_eliminacion()
-
-            Button:
-                text: "No"
-                on_press: root.dismiss()
 ''')
 
 class ViewMediaScreen(Screen):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.ruta_descarga = obtener_ruta_descarga()
+        self.ruta_actual = obtener_ruta_descarga()  # Carpeta base "DescargasVideos"
         self.build_ui()
 
     def build_ui(self):
@@ -132,49 +76,73 @@ class ViewMediaScreen(Screen):
 
     def cargar_archivos(self):
         """
-        Carga todos los archivos de la carpeta de descargas.
+        Carga todos los archivos y carpetas de la ruta actual.
         """
         grid_layout = self.ids.grid_layout
         grid_layout.clear_widgets()
-        if os.path.exists(self.ruta_descarga):
-            for archivo in os.listdir(self.ruta_descarga):
+
+        if os.path.exists(self.ruta_actual):
+            for nombre in os.listdir(self.ruta_actual):
+                ruta_completa = os.path.join(self.ruta_actual, nombre)
                 archivo_layout = BoxLayout(size_hint_y=None, height=40)
-                archivo_layout.add_widget(Label(text=archivo, size_hint_x=0.6))
+                archivo_layout.add_widget(Label(text=nombre, size_hint_x=0.6))
 
-                # Botón de reproducción
-                archivo_layout.add_widget(Button(
-                    text="Reproducir",
-                    size_hint_x=0.2,
-                    on_press=partial(self.reproducir_archivo, archivo)
-                ))
+                if os.path.isdir(ruta_completa):
+                    # Botón para abrir carpetas
+                    archivo_layout.add_widget(Button(
+                        text="Abrir",
+                        size_hint_x=0.2,
+                        on_press=partial(self.abrir_carpeta, nombre)
+                    ))
+                else:
+                    # Botón de reproducción para archivos
+                    archivo_layout.add_widget(Button(
+                        text="Reproducir",
+                        size_hint_x=0.2,
+                        on_press=partial(self.reproducir_archivo, nombre)
+                    ))
 
-                # Botón de editar
-                archivo_layout.add_widget(Button(
-                    text="Editar",
-                    size_hint_x=0.1,
-                    on_press=partial(self.editar_archivo, archivo)
-                ))
+                    # Botón de editar para archivos
+                    archivo_layout.add_widget(Button(
+                        text="Editar",
+                        size_hint_x=0.1,
+                        on_press=partial(self.editar_archivo, nombre)
+                    ))
 
-                # Botón de eliminar
-                archivo_layout.add_widget(Button(
-                    text="Eliminar",
-                    size_hint_x=0.1,
-                    on_press=partial(self.confirmar_eliminacion, archivo)
-                ))
+                    # Botón de eliminar para archivos
+                    archivo_layout.add_widget(Button(
+                        text="Eliminar",
+                        size_hint_x=0.1,
+                        on_press=partial(self.confirmar_eliminacion, nombre)
+                    ))
 
                 grid_layout.add_widget(archivo_layout)
 
-    def refresh_file_chooser(self):
+        # Habilitar o deshabilitar el botón "Retroceder"
+        self.ids.retroceder_btn.disabled = (self.ruta_actual == obtener_ruta_descarga())
+
+    def abrir_carpeta(self, nombre_carpeta, _):
         """
-        Recarga la lista de archivos multimedia.
+        Abre una carpeta y actualiza la ruta actual.
         """
-        self.cargar_archivos()
+        nueva_ruta = os.path.join(self.ruta_actual, nombre_carpeta)
+        if os.path.isdir(nueva_ruta):
+            self.ruta_actual = nueva_ruta
+            self.cargar_archivos()
+
+    def retroceder_carpeta(self):
+        """
+        Retrocede a la carpeta anterior.
+        """
+        if self.ruta_actual != obtener_ruta_descarga():
+            self.ruta_actual = os.path.dirname(self.ruta_actual)
+            self.cargar_archivos()
 
     def reproducir_archivo(self, archivo, _):
         """
         Reproduce el archivo multimedia con el reproductor predeterminado del sistema.
         """
-        ruta_completa = os.path.join(self.ruta_descarga, archivo)
+        ruta_completa = os.path.join(self.ruta_actual, archivo)
         os.startfile(ruta_completa)
 
     def archivo_en_uso(self, ruta_archivo):
@@ -227,8 +195,8 @@ class ViewMediaScreen(Screen):
         if not nuevo_nombre.endswith(extension):
             nuevo_nombre += extension
 
-        ruta_vieja = os.path.join(self.ruta_descarga, archivo_viejo)
-        ruta_nueva = os.path.join(self.ruta_descarga, nuevo_nombre)
+        ruta_vieja = os.path.join(self.ruta_actual, archivo_viejo)
+        ruta_nueva = os.path.join(self.ruta_actual, nuevo_nombre)
 
         # Verificar si el archivo está en uso
         if self.archivo_en_uso(ruta_vieja):
@@ -238,7 +206,6 @@ class ViewMediaScreen(Screen):
         try:
             os.rename(ruta_vieja, ruta_nueva)
             self.cargar_archivos()  # Recargar la lista de archivos
-            self.manager.get_screen('view_media').refresh_file_chooser()
         except Exception as e:
             self.mostrar_error(f"Error al renombrar el archivo: {e}")
         finally:
@@ -267,12 +234,11 @@ class ViewMediaScreen(Screen):
 
         popup.open()
 
-
     def eliminar_archivo(self, archivo, popup):
         """
         Elimina el archivo seleccionado.
         """
-        ruta_completa = os.path.join(self.ruta_descarga, archivo)
+        ruta_completa = os.path.join(self.ruta_actual, archivo)
 
         # Verificar si el archivo está en uso
         if self.archivo_en_uso(ruta_completa):
@@ -282,11 +248,16 @@ class ViewMediaScreen(Screen):
         try:
             os.remove(ruta_completa)
             self.cargar_archivos()  # Recargar la lista de archivos
-            self.manager.get_screen('view_media').refresh_file_chooser()
         except Exception as e:
             self.mostrar_error(f"Error al eliminar el archivo: {e}")
         finally:
             popup.dismiss()  # Cerrar el Popup después de eliminar
+    
+    def refresh_file_chooser(self):
+        """
+        Recarga la lista de archivos multimedia.
+        """
+        self.cargar_archivos()
 
     def mostrar_error(self, mensaje):
         """

@@ -1,6 +1,7 @@
 import os
 from yt_dlp import YoutubeDL
-from .config import obtener_ruta_descarga
+
+from .config import obtener_ruta_descarga, verificar_y_crear_subcarpetas
 from .format import obtener_formato_descarga
 
 def obtener_url():
@@ -14,12 +15,11 @@ def obtener_ruta_descarga_backend():
     """
     Obtiene la ruta de descarga desde la configuración.
     """
-    return obtener_ruta_descarga()
+    ruta_descarga = obtener_ruta_descarga()
+    verificar_y_crear_subcarpetas(ruta_descarga)
+    return ruta_descarga
 
-def descargar_video(url, ruta_descarga, format_selected, callback_progreso=None):
-    """
-    Descarga el video y llama a callback_progreso para actualizar el progreso.
-    """
+def descargar_video(url, ruta_descarga, formato, callback_progreso=None):
     # Obtener la ruta absoluta del directorio actual del script
     script_dir = os.path.dirname(os.path.abspath(__file__))
     
@@ -33,18 +33,31 @@ def descargar_video(url, ruta_descarga, format_selected, callback_progreso=None)
     else:
         print(f"Advertencia: La ruta {ffmpeg_path} se reconoce correctamente.")
 
-    formato_id = obtener_formato_descarga(url, format_selected)
+    formato_id = obtener_formato_descarga(url, formato)
     if not formato_id:
         print("No se pudo seleccionar un formato.")
         return
+
+    # Seleccionar la subcarpeta adecuada según el formato
+    if formato == 'video':
+        subcarpeta = 'Videos'
+    elif formato == 'audio':
+        subcarpeta = 'Audios'
+    elif formato == 'mudo':
+        subcarpeta = 'Videos mudos'
+    else:
+        print("Formato no reconocido.")
+        return
+
+    ruta_descarga_final = os.path.join(ruta_descarga, subcarpeta)
 
     # Configuración de yt-dlp
     ydl_opts = {
         'ffmpeg_location': ffmpeg_path,  # Especifica la ruta de ffmpeg
         'format': formato_id,  # Usa el formato seleccionado
-        'outtmpl': os.path.join(ruta_descarga, '%(title)s.%(ext)s'),  # Ruta de descarga
+        'outtmpl': os.path.join(ruta_descarga_final, '%(title)s.%(ext)s'),  # Ruta de descarga
         'quiet': True,  # Silencia las advertencias
-        'progress_hooks': [lambda d: _progreso_descarga(d, callback_progreso)],  # Hook de progreso
+        'progress_hooks': [lambda d: _progreso_descarga(d, callback_progreso)] if callback_progreso else []
     }
 
     try:
@@ -65,3 +78,17 @@ def _progreso_descarga(d, callback_progreso):
         progreso = (d['downloaded_bytes'] / d['total_bytes']) * 100
         tiempo_restante = d.get('eta', 0)  # Tiempo restante en segundos
         callback_progreso(progreso, tiempo_restante)
+
+if __name__ == "__main__":
+    # Obtener la URL del video
+    url = obtener_url()
+    
+    # Obtener la ruta de descarga
+    ruta_descarga = obtener_ruta_descarga_backend()
+    print(f"Descargando video en: {ruta_descarga}")
+    
+    # Seleccionar el formato (video, audio, mudo)
+    formato = input("Introduce el formato (video, audio, mudo): ").strip()
+    
+    # Llamar a la función para descargar el video
+    descargar_video(url, ruta_descarga, formato)
