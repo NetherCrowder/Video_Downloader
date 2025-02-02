@@ -256,8 +256,6 @@ class DownloadScreen(Screen):
             shutil.rmtree(self.cache_dir)
         self.cache_dir = None
 
-    # (El resto del código permanece igual...)
-
     def start_descargar(self, url):
         """
         Descarga el video con la URL y el formato seleccionado en un hilo separado.
@@ -272,7 +270,7 @@ class DownloadScreen(Screen):
         elif self.ids.audio_checkbox.active:
             formato = "audio"  # Formato para solo audio
         elif self.ids.video_mudo_checkbox.active:
-            formato = "video_mudo"  # Formato para video sin audio
+            formato = "mudo"  # Formato para video sin audio
 
         if not url or not formato:
             return
