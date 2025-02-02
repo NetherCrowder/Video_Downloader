@@ -1,14 +1,17 @@
-import os
-from functools import partial
-from kivy.lang import Builder
-from kivy.uix.screenmanager import Screen
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
-from kivy.uix.label import Label
-from kivy.uix.popup import Popup
-from kivy.uix.textinput import TextInput
-from backend.config import obtener_ruta_descarga
+import os # Importa el módulo os para interactuar con el sistema operativo
 
+from functools import partial # Importa la función partial para crear funciones parciales
+from kivy.lang import Builder # Importa la clase Builder de Kivy
+from kivy.uix.screenmanager import Screen # Importa la clase Screen de Kivy
+from kivy.uix.boxlayout import BoxLayout # Importa la clase BoxLayout de Kivy
+from kivy.uix.button import Button # Importa la clase Button de Kivy
+from kivy.uix.label import Label # Importa la clase Label de Kivy
+from kivy.uix.popup import Popup # Importa la clase Popup de Kivy
+from kivy.uix.textinput import TextInput # Importa la clase TextInput de Kivy
+
+from backend.config import obtener_ruta_descarga # Importa la función obtener_ruta_descarga de backend.config
+
+# Carga el archivo de diseño de la pantalla ViewMediaScreen
 Builder.load_string('''
 <ViewMediaScreen>:
     BoxLayout:

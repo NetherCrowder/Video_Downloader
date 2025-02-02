@@ -6,16 +6,16 @@ from kivy.utils import get_color_from_hex
 
 from backend.config import obtener_ruta_descarga, actualizar_ruta_descarga
 
-# Importamos pywin32
-import win32com.client
+import win32com.client  # Importamos pywin32
 
 # Definimos colores similares a la ventana de inicio
-COLOR_FONDO = get_color_from_hex("#2E3440")            # Gris oscuro
-COLOR_TITULO = get_color_from_hex("#ECEFF4")            # Blanco azulado
-COLOR_BOTONES = get_color_from_hex("#5E81AC")           # Azul claro
-COLOR_BOTONES_SECUNDARIOS = get_color_from_hex("#4C566A") # Gris azulado
-COLOR_BOTONES_PELIGRO = get_color_from_hex("#BF616A")     # Rojo suave
+COLOR_FONDO = get_color_from_hex("#2E3440")  # Gris oscuro
+COLOR_TITULO = get_color_from_hex("#ECEFF4")  # Blanco azulado
+COLOR_BOTONES = get_color_from_hex("#5E81AC")  # Azul claro
+COLOR_BOTONES_SECUNDARIOS = get_color_from_hex("#4C566A")  # Gris azulado
+COLOR_BOTONES_PELIGRO = get_color_from_hex("#BF616A")  # Rojo suave
 
+# Cargar el diseño de la pantalla desde una cadena de texto
 Builder.load_string('''
 <SettingsScreen>:
     BoxLayout:
@@ -81,6 +81,7 @@ def select_folder_native():
     return None
 
 class SettingsScreen(Screen):
+    # Definimos los colores como propiedades de la clase
     fondo_color = COLOR_FONDO
     titulo_color = COLOR_TITULO
     botones_color = COLOR_BOTONES

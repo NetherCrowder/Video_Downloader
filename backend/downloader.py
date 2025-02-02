@@ -1,41 +1,42 @@
-import os
-from yt_dlp import YoutubeDL
+import os # Importa el módulo os
 
-from .config import obtener_ruta_descarga, verificar_y_crear_subcarpetas
-from .format import obtener_formato_descarga
+from yt_dlp import YoutubeDL # Importa la clase YoutubeDL de yt-dlp
 
-def obtener_url():
+from .config import obtener_ruta_descarga, verificar_y_crear_subcarpetas # Importa las funciones de configuración
+from .format import obtener_formato_descarga # Importa la función para obtener el formato de descarga
+
+def obtener_url(): # Define la función obtener_url
     """
     Pide al usuario la URL del video.
     """
-    url = input("Introduce la URL del video: ").strip()
-    return url
+    url = input("Introduce la URL del video: ").strip() # Pide al usuario la URL del video
+    return url # Retorna la URL del video
 
-def obtener_ruta_descarga_backend():
+def obtener_ruta_descarga_backend(): # Define la función obtener_ruta_descarga_backend
     """
     Obtiene la ruta de descarga desde la configuración.
     """
-    ruta_descarga = obtener_ruta_descarga()
-    verificar_y_crear_subcarpetas(ruta_descarga)
-    return ruta_descarga
+    ruta_descarga = obtener_ruta_descarga() # Obtiene la ruta de descarga desde la configuración
+    verificar_y_crear_subcarpetas(ruta_descarga) # Verifica y crea las subcarpetas necesarias
+    return ruta_descarga # Retorna la ruta de descarga
 
-def descargar_video(url, ruta_descarga, formato, callback_progreso=None):
+def descargar_video(url, ruta_descarga, formato, callback_progreso=None): # Define la función descargar_video con los parámetros url, ruta_descarga, formato y callback_progreso
     # Obtener la ruta absoluta del directorio actual del script
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = os.path.dirname(os.path.abspath(__file__)) # Obtiene la ruta absoluta del directorio actual del script
     
     # Construir la ruta absoluta al binario de ffmpeg
-    ffmpeg_path = os.path.join(script_dir, "..", "bin", "ffmpeg", "ffmpeg.exe")
+    ffmpeg_path = os.path.join(script_dir, "..", "bin", "ffmpeg", "ffmpeg.exe") # Construye la ruta absoluta al binario de ffmpeg
 
     # Verificar si el archivo ffmpeg existe
     if not os.path.exists(ffmpeg_path):
-        print(f"Advertencia: No se encontró ffmpeg en la ruta {ffmpeg_path}.")
+        print(f"Advertencia: No se encontró ffmpeg en la ruta {ffmpeg_path}.") # Imprime un mensaje de advertencia
         return
     else:
-        print(f"Advertencia: La ruta {ffmpeg_path} se reconoce correctamente.")
+        print(f"Advertencia: La ruta {ffmpeg_path} se reconoce correctamente.") # Imprime un mensaje de advertencia
 
-    formato_id = obtener_formato_descarga(url, formato)
+    formato_id = obtener_formato_descarga(url, formato) # Obtiene el formato de descarga
     if not formato_id:
-        print("No se pudo seleccionar un formato.")
+        print("No se pudo seleccionar un formato.") # Imprime un mensaje
         return
 
     # Seleccionar la subcarpeta adecuada según el formato

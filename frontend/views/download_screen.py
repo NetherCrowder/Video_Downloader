@@ -1,12 +1,12 @@
-import os
-import tempfile
+import os # Para manejar archivos y carpetas
+import tempfile # Para crear una carpeta temporal para la cache
 import shutil  # Para eliminar la carpeta temporal de manera recursiva
-import requests
+import requests # Para descargar la miniatura del video
 import threading  # Para manejar hilos
 
-from kivy.uix.screenmanager import Screen
-from kivy.lang import Builder
-from kivy.properties import StringProperty, NumericProperty
+from kivy.uix.screenmanager import Screen # Para crear la pantalla de descarga
+from kivy.lang import Builder # Para cargar el diseño de la pantalla
+from kivy.properties import StringProperty, NumericProperty # Para actualizar la UI
 from kivy.app import App  # Para manejar el cierre de la aplicación
 from kivy.clock import Clock  # Para actualizar la UI desde el hilo principal
 
@@ -14,6 +14,7 @@ from yt_dlp import YoutubeDL  # Usar yt-dlp para obtener la URL de la miniatura
 
 from backend.downloader import descargar_video, obtener_ruta_descarga_backend  # Importar la función de descarga
 
+# Cargar el diseño de la pantalla desde una cadena de texto
 Builder.load_string('''
 <DownloadScreen>:
     BoxLayout:
@@ -339,8 +340,8 @@ class DownloadScreen(Screen):
             self.ids.estado_label.text = "¡Descarga completada!"
 
         # Redireccionar a la pantalla de visualización y refrescar el file chooser
-        self.manager.current = 'view_media'
-        self.manager.get_screen('view_media').refresh_file_chooser()
+        self.manager.current = 'view_media_screen'
+        self.manager.get_screen('view_media_screen').refresh_file_chooser()
 
     def _mostrar_error(self, error):
         """

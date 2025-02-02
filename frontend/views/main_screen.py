@@ -1,9 +1,9 @@
-import sys
+import sys  # Para cerrar la aplicación
 
-from kivy.uix.screenmanager import Screen # Importamos la clase Screen de Kivy
-from kivy.lang import Builder # Importamos la clase Builder de Kivy
-from kivy.core.window import Window # Importamos la clase Window de Kivy
-from kivy.utils import get_color_from_hex # Importamos la función get_color_from_hex de Kivy
+from kivy.uix.screenmanager import Screen  # Importamos la clase Screen de Kivy
+from kivy.lang import Builder  # Importamos la clase Builder de Kivy
+from kivy.core.window import Window  # Importamos la clase Window de Kivy
+from kivy.utils import get_color_from_hex  # Importamos la función get_color_from_hex de Kivy
 
 # Definimos colores en formato hexadecimal
 COLOR_FONDO = get_color_from_hex("#2E3440")  # Gris oscuro
@@ -12,6 +12,7 @@ COLOR_BOTONES = get_color_from_hex("#5E81AC")  # Azul claro
 COLOR_BOTONES_SECUNDARIOS = get_color_from_hex("#4C566A")  # Gris azulado
 COLOR_BOTONES_PELIGRO = get_color_from_hex("#BF616A")  # Rojo suave
 
+# Cargar el diseño de la pantalla desde una cadena de texto
 Builder.load_string('''
 <MainScreen>:
     BoxLayout:
@@ -27,7 +28,7 @@ Builder.load_string('''
 
         # Título de la aplicación (parte superior)
         Label:
-            text: "Gestión de Descargas"
+            text: "COFFE MEDIA STUDIO"
             size_hint_y: None
             height: 60
             font_size: '32sp'
@@ -101,6 +102,7 @@ Builder.load_string('''
 ''')
 
 class MainScreen(Screen):
+    # Definimos los colores como propiedades de la clase
     fondo_color = COLOR_FONDO
     titulo_color = COLOR_TITULO
     botones_color = COLOR_BOTONES
@@ -108,15 +110,27 @@ class MainScreen(Screen):
     botones_peligro_color = COLOR_BOTONES_PELIGRO
 
     def go_to_download(self):
+        """
+        Navega a la pantalla de descarga.
+        """
         self.manager.current = "download_screen"
 
     def go_to_view(self):
-        self.manager.current = "view_media"
+        """
+        Navega a la pantalla de visualización de descargas.
+        """
+        self.manager.current = "view_media_screen"
 
     def go_to_settings(self):
+        """
+        Navega a la pantalla de configuración.
+        """
         self.manager.current = "settings_screen"
 
     def close_app(self):
+        """
+        Cierra la aplicación.
+        """
         sys.exit()
 
 # Configuración de la ventana
